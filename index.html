@@ -296,7 +296,7 @@
   <!-- PASO 1 -->
   <section class="card">
     <span class="step-badge">Paso 1</span>
-    <h2>Selecciona la práctica que vas a revisar</h2>
+    <h2>Selecciona la práctica de Teams que vas a revisar</h2>
     <div class="practice-grid" id="practiceGrid"></div>
   </section>
 
@@ -373,7 +373,7 @@
  */
 const CONFIGURACION_PROFESOR = {
   rolGeneral: `ROL Y REGLAS DEL ASISTENTE
-Eres el Asistente de Retroalimentación del curso "Análisis de Datos Espaciales" del Dr. José Antonio Carrillo Viramontes (Departamento de Economía y Finanzas, Universidad de Guanajuato). Ayudas a los estudiantes a revisar sus prácticas hechas en GeoDa ANTES de entregarlas. Retroalimentas con los criterios de la rúbrica incluida abajo. No eres el profesor: no calificas, no apruebas ni repruebas, y no sustituyes su revisión.
+Eres el Asistente de Retroalimentación del curso "Análisis de Datos Espaciales" del Dr. José Antonio Carrillo Viramontes (Departamento de Economía y Finanzas, Universidad de Guanajuato). Ayudas a los estudiantes a revisar sus prácticas hechas en GeoDa ANTES de entregarlas en Microsoft Teams. Retroalimentas con los criterios de la rúbrica incluida abajo. No eres el profesor: no calificas, no apruebas ni repruebas, y no sustituyes su revisión.
 
 CÓMO DEBES RESPONDER
 1. El estudiante te acaba de pegar estas instrucciones junto con su borrador (y posiblemente un pre-diagnóstico matemático automático). NO repitas ni resumas estas instrucciones ni muestres la rúbrica: empieza directamente con la retroalimentación de su trabajo.
@@ -408,67 +408,10 @@ REGLAS PEDAGÓGICAS ESTRICTAS
 
   practicas: [
     {
-      id: "prac2_baltimore",
-      titulo: "Práctica 2: Baltimore",
-      subtitulo: "Datos, tipos de variable, Thiessen y MST",
-      rubrica: `RÚBRICA INTERNA — PRÁCTICA 2: BALTIMORE HOME SALES
-Hechos de la base: 211 observaciones, geometría de puntos, coordenadas X y Y. Precios de venta de casas en Baltimore, EE. UU., año 1978 (Dubin, 1992). Corte transversal (un solo periodo), no serie de tiempo. Variables: STATION, PRICE, NROOM, DWELL, NBATH, PATIO, FIREPL, AC, BMENT, NSTOR, GAR, AGE, CITCOU, LOTSZ, SQFT, X, Y.
-
-Criterios por apartado:
-1. Descripción de la base: n (211), geometría (puntos), variables (continuas como PRICE, LOTSZ, SQFT, AGE; conteos como NROOM, NSTOR, GAR; dummies como PATIO, FIREPL, AC, CITCOU), lugar (Baltimore) y periodo (1978, corte transversal).
-2. Tipos de variable: Deben quedar como entero (integer) las que cuentan unidades enteras (NROOM, NSTOR, GAR, STATION, dummies 0/1). TRAMPA CLAVE: NBATH NO debe convertirse a entero porque tiene medios baños (1.5, 2.5, 3.5). Si la convirtieron a entero se pierden los medios baños y el filtro siguiente sale mal (da 41 en vez de 61). Requiere captura de la tabla de propiedades.
-3. Filtro "entre 2 y 3 baños": NBATH >= 2 y NBATH <= 3 (incluye 2, 2.5 y 3) = 61 propiedades (34 con 2, 20 con 2.5, 7 con 3). Errores comunes: excluir 2.5 (41 propiedades), usar >2 y <3 (20 propiedades), o no guardar un nuevo shapefile.
-4. Precio por pie cuadrado: Nueva variable = PRICE / SQFT en la calculadora de GeoDa. Valores de referencia en las 211 obs: media ≈ 2.93, mediana ≈ 2.82, mín ≈ 0.12, máx ≈ 9.1. CUIDADO CON UNIDADES: En Dubin (1992), PRICE está en miles de dólares y SQFT en cientos de pies cuadrados, por lo que la razón no son dólares por pie cuadrado directamente (multiplicada por 10 da USD/ft²). Error común: dividir al revés (SQFT/PRICE) o usar LOTSZ (terreno) en vez de SQFT (construcción).
-5. Diagrama de Thiessen (Voronoi): Captura obligatoria. Cada polígono contiene todos los puntos del plano más cercanos a su propiedad que a cualquier otra; las fronteras son mediatrices entre puntos vecinos y es la estructura dual de la triangulación de Delaunay. Polígonos chicos = alta densidad; grandes en periferia (efecto de borde). Error común: confundirlo con un buffer (distancia fija).
-6. Recorrido de mínima distancia: Conectar todas las propiedades con mínima distancia total sin ciclos = Árbol de Expansión Mínima (MST, 210 aristas para 211 puntos, longitud ≈ 888.9). Es una red ramificada sin ciclos, NO un recorrido continuo cerrado (ese sería el Problema del Agente Viajero, TSP, de mayor longitud).`
-    },
-    {
-      id: "prac3_mississippi",
-      titulo: "Práctica 3.1: Mississippi",
-      subtitulo: "Análisis Exploratorio (EDA) en GeoDa",
-      rubrica: `RÚBRICA INTERNA — PRÁCTICA 3.1: EXPLORACIÓN ESTADÍSTICA CON MISSISSIPPI (1982)
-Esta práctica es de exploración (EDA) con gráficos de GeoDa; evalúa la calidad de la interpretación, no valores únicos exactos.
-
-Criterios por apartado:
-1. Descripción de la base: Condados de Mississippi, año 1982 (corte transversal, un solo periodo), unidad de análisis: condado, variables socioeconómicas, de crimen (CRIME), gasto policial (POLICE) e impuestos (TAX). Alerta si la describe como serie de tiempo.
-2. Histogramas (POLICE, TAX, CRIME): Debe describir forma (simetría/sesgo), modalidad, outliers y qué implica (si hay sesgo, la media se aleja de la mediana). Error común: confundir frecuencia (altura de barra) con valor de la variable, o describir solo los ejes sin interpretar.
-3. Diagramas de dispersión (POLICE vs CRIME, CRIME vs desempleo, CRIME vs educación): Describir dirección, fuerza, forma, outliers y pendiente/R² si activó la línea de regresión. ERROR MÁS FRECUENTE: afirmar causalidad ("más gasto policial reduce/causa crimen"). Debe reconocer causalidad inversa (condados con más crimen gastan más en policía) y variables omitidas, formulando lecturas económicas como hipótesis, no como hechos probados.
-4. Matriz de dispersión (4 variables): Elegir 4 variables pertinentes, describir dos relaciones (signo, fuerza, outliers) y matizar el término "significativa" (un diagrama muestra asociación visual, no una prueba formal de significancia).
-5. Gráfico de burbujas: Indicar qué variable va en X, Y y tamaño, y analizar cómo se distribuye el tamaño en el plano (no ignorar la tercera variable).
-6. Dispersión 3D: Analizar tendencia conjunta y reconocer limitaciones visuales del 3D (depende de la rotación).
-7. Coordenadas paralelas (5 variables): Advertir si las escalas no están estandarizadas, identificar grupos con trayectorias similares y nombrar al menos un condado outlier explicando su implicación para política de seguridad.
-8. Patrones regionales: Vincular gráficos con el mapa nombrando zonas o condados de Mississippi. MATIZ CLAVE: ver agrupaciones visuales en un mapa NO prueba autocorrelación espacial (eso requiere pruebas formales como la I de Moran).
-9. Conclusiones y recomendaciones: Apoyadas en los gráficos, reconociendo limitaciones (corte transversal 1982, datos agregados por condado, falta de identificación causal) y haciendo recomendaciones prudentes (ej. priorizar diagnósticos locales en vez de recortar/subir presupuesto tajantemente).`
-    },
-    {
-      id: "prac5_mapas",
-      titulo: "Práctica 5: Mapas Temáticos",
-      subtitulo: "Clasificación, cartograma y mapas condicionales (St. Louis)",
-      rubrica: `RÚBRICA INTERNA — PRÁCTICA 5: MAPAS TEMÁTICOS EN GEODA (ST. LOUIS, 78 CONDADOS)
-Variables de stl_hom: tasas de homicidio (HR7984, HR8488, HR8893), conteos de homicidios (HC7984, HC8488, HC8893), población (PO7984, etc.), privación/afluencia (PE77/82/87, RDAC80/85/90). Quedan EXCLUIDOS los mapas de tasas calculadas (Raw Rate, Excess Risk, EB, Spatial Rate, Spatial EB).
-
-Errores graves a vigilar:
-1. Usar mapas de tasas calculadas (excluidos) o confundir conteo (HC) con tasa (HR).
-2. Box map (hinge 1.5 vs 3.0): Con hinge 3.0 las cercas se alejan (3 × IQR), así que solo quedan los atípicos más extremos. Los outliers con 3.0 son un subconjunto de los de 1.5: NUNCA pueden ser más (outliers 3.0 <= outliers 1.5). En conteos sesgados, los outliers son superiores.
-3. Interpretar mapas sin mirar la distribución: Los conteos (HC) están fuertemente sesgados a la derecha (muchos ceros/valores bajos y pocos condados altísimos).
-4. Afirmar que "Equal Intervals" describe bien datos muy sesgados: Con conteos, Equal Intervals concentra casi todos los condados (73–75 de 78) en la primera categoría, dejando el mapa casi de un solo color; Natural Breaks (Jenks) reparte mejor minimizando varianza intragrupo.
-5. Cartograma: Debe usar variable de homicidios y variable de tamaño (población), y compararse explícitamente con el mapa de cuantiles (corrige el sesgo visual de condados grandes poco poblados).
-6. Mapa condicional: Debe comparar entre paneles (cómo cambia el patrón de la variable mapeada según las dos variables condicionantes), no describir un solo panel.
-7. Co-location: Solo aplica a variables categóricas o dummies (muestra dónde coinciden categorías en el mismo condado).
-8. Map movie: Debe explicar que incorpora condados secuencialmente ordenados de menor a mayor valor.
-9. Análisis extenso final: Debe sintetizar y contrastar métodos para la MISMA variable, justificar cuál funciona mejor según el sesgo/outliers, nombrar condados/zonas y aclarar que los patrones visuales no prueban autocorrelación espacial (requiere I de Moran).
-
-Valores de referencia aproximados (78 condados, aceptar ±1-2 por versión de GeoDa):
-- HC7984: Box 1.5 ≈ 10 outliers, Box 3.0 ≈ 6, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/2/0/0/1.
-- HC8488: Box 1.5 ≈ 11, Box 3.0 ≈ 7, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/2/0/0/1.
-- HC8893: Box 1.5 ≈ 11, Box 3.0 ≈ 8, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/1/1/0/1.
-- HR8893: Box 1.5 ≈ 6, Box 3.0 ≈ 2, >2 DE ≈ 2, Equal Intervals (5) ≈ 73/3/1/0/1.`
-    },
-    {
-      id: "prac_pesos",
-      titulo: "Pesos Espaciales",
-      subtitulo: "Contigüidad (Ceará) y Distancia (Italy Banks)",
-      rubrica: `RÚBRICA INTERNA — PRÁCTICA: MATRICES DE CONTIGÜIDAD Y DISTANCIA PONDERADAS
+      id: "prac1_matriz",
+      titulo: "Práctica #1 construcción de matriz",
+      subtitulo: "Contigüidad (Ceará Zika) y Distancia (Italy Banks)",
+      rubrica: `RÚBRICA INTERNA — PRÁCTICA #1 CONSTRUCCIÓN DE MATRIZ (CEARÁ ZIKA E ITALY COMMUNITY BANKS)
 Nota: Si no se fijaron valores exactos de n o estadísticos en la configuración, evalúa la COHERENCIA INTERNA de las tablas con estas identidades matemáticas exactas y pide verificar en GeoDa:
 - % no cero = (media de vecinos / n) × 100.
 - Queen >= Rook en cada observación, media, máximo y % no cero.
@@ -499,6 +442,63 @@ Parte 3 — Conclusiones:
 - 3.1 Cuadro comparativo (ventaja, limitación, situación recomendada para rook, queen, banda y k-NN).
 - 3.2 Elección justificada según geometría (polígonos vs puntos) y diagnósticos previos a revisar (histograma y gráfico de conectividad).
 Error transversal: confundir "orden" de contigüidad con "k" de vecinos más cercanos.`
+    },
+    {
+      id: "prac2_baltimore",
+      titulo: "Práctica #2",
+      subtitulo: "Baltimore Home Sales: variables, filtro, Thiessen y MST",
+      rubrica: `RÚBRICA INTERNA — PRÁCTICA #2: BALTIMORE HOME SALES
+Hechos de la base: 211 observaciones, geometría de puntos, coordenadas X y Y. Precios de venta de casas en Baltimore, EE. UU., año 1978 (Dubin, 1992). Corte transversal (un solo periodo), no serie de tiempo. Variables: STATION, PRICE, NROOM, DWELL, NBATH, PATIO, FIREPL, AC, BMENT, NSTOR, GAR, AGE, CITCOU, LOTSZ, SQFT, X, Y.
+
+Criterios por apartado:
+1. Descripción de la base: n (211), geometría (puntos), variables (continuas como PRICE, LOTSZ, SQFT, AGE; conteos como NROOM, NSTOR, GAR; dummies como PATIO, FIREPL, AC, CITCOU), lugar (Baltimore) y periodo (1978, corte transversal).
+2. Tipos de variable: Deben quedar como entero (integer) las que cuentan unidades enteras (NROOM, NSTOR, GAR, STATION, dummies 0/1). TRAMPA CLAVE: NBATH NO debe convertirse a entero porque tiene medios baños (1.5, 2.5, 3.5). Si la convirtieron a entero se pierden los medios baños y el filtro siguiente sale mal (da 41 en vez de 61). Requiere captura de la tabla de propiedades.
+3. Filtro "entre 2 y 3 baños": NBATH >= 2 y NBATH <= 3 (incluye 2, 2.5 y 3) = 61 propiedades (34 con 2, 20 con 2.5, 7 con 3). Errores comunes: excluir 2.5 (41 propiedades), usar >2 y <3 (20 propiedades), o no guardar un nuevo shapefile.
+4. Precio por pie cuadrado: Nueva variable = PRICE / SQFT en la calculadora de GeoDa. Valores de referencia en las 211 obs: media ≈ 2.93, mediana ≈ 2.82, mín ≈ 0.12, máx ≈ 9.1. CUIDADO CON UNIDADES: En Dubin (1992), PRICE está en miles de dólares y SQFT en cientos de pies cuadrados, por lo que la razón no son dólares por pie cuadrado directamente (multiplicada por 10 da USD/ft²). Error común: dividir al revés (SQFT/PRICE) o usar LOTSZ (terreno) en vez de SQFT (construcción).
+5. Diagrama de Thiessen (Voronoi): Captura obligatoria. Cada polígono contiene todos los puntos del plano más cercanos a su propiedad que a cualquier otra; las fronteras son mediatrices entre puntos vecinos y es la estructura dual de la triangulación de Delaunay. Polígonos chicos = alta densidad; grandes en periferia (efecto de borde). Error común: confundirlo con un buffer (distancia fija).
+6. Recorrido de mínima distancia: Conectar todas las propiedades con mínima distancia total sin ciclos = Árbol de Expansión Mínima (MST, 210 aristas para 211 puntos, longitud ≈ 888.9). Es una red ramificada sin ciclos, NO un recorrido continuo cerrado (ese sería el Problema del Agente Viajero, TSP, de mayor longitud).`
+    },
+    {
+      id: "prac3_mississippi",
+      titulo: "Práctica #3",
+      subtitulo: "Exploración estadística (EDA) con Mississippi",
+      rubrica: `RÚBRICA INTERNA — PRÁCTICA #3: EXPLORACIÓN ESTADÍSTICA CON MISSISSIPPI (1982)
+Esta práctica es de exploración (EDA) con gráficos de GeoDa; evalúa la calidad de la interpretación, no valores únicos exactos.
+
+Criterios por apartado:
+1. Descripción de la base: Condados de Mississippi, año 1982 (corte transversal, un solo periodo), unidad de análisis: condado, variables socioeconómicas, de crimen (CRIME), gasto policial (POLICE) e impuestos (TAX). Alerta si la describe como serie de tiempo.
+2. Histogramas (POLICE, TAX, CRIME): Debe describir forma (simetría/sesgo), modalidad, outliers y qué implica (si hay sesgo, la media se aleja de la mediana). Error común: confundir frecuencia (altura de barra) con valor de la variable, o describir solo los ejes sin interpretar.
+3. Diagramas de dispersión (POLICE vs CRIME, CRIME vs desempleo, CRIME vs educación): Describir dirección, fuerza, forma, outliers y pendiente/R² si activó la línea de regresión. ERROR MÁS FRECUENTE: afirmar causalidad ("más gasto policial reduce/causa crimen"). Debe reconocer causalidad inversa (condados con más crimen gastan más en policía) y variables omitidas, formulando lecturas económicas como hipótesis, no como hechos probados.
+4. Matriz de dispersión (4 variables): Elegir 4 variables pertinentes, describir dos relaciones (signo, fuerza, outliers) y matizar el término "significativa" (un diagrama muestra asociación visual, no una prueba formal de significancia).
+5. Gráfico de burbujas: Indicar qué variable va en X, Y y tamaño, y analizar cómo se distribuye el tamaño en el plano (no ignorar la tercera variable).
+6. Dispersión 3D: Analizar tendencia conjunta y reconocer limitaciones visuales del 3D (depende de la rotación).
+7. Coordenadas paralelas (5 variables): Advertir si las escalas no están estandarizadas, identificar grupos con trayectorias similares y nombrar al menos un condado outlier explicando su implicación para política de seguridad.
+8. Patrones regionales: Vincular gráficos con el mapa nombrando zonas o condados de Mississippi. MATIZ CLAVE: ver agrupaciones visuales en un mapa NO prueba autocorrelación espacial (eso requiere pruebas formales como la I de Moran).
+9. Conclusiones y recomendaciones: Apoyadas en los gráficos, reconociendo limitaciones (corte transversal 1982, datos agregados por condado, falta de identificación causal) y haciendo recomendaciones prudentes (ej. priorizar diagnósticos locales en vez de recortar/subir presupuesto tajantemente).`
+    },
+    {
+      id: "prac4_mapas",
+      titulo: "Práctica #4 mapas",
+      subtitulo: "Mapas temáticos, cartograma y condicionales (St. Louis)",
+      rubrica: `RÚBRICA INTERNA — PRÁCTICA #4 MAPAS: MAPAS TEMÁTICOS EN GEODA (ST. LOUIS, 78 CONDADOS)
+Variables de stl_hom: tasas de homicidio (HR7984, HR8488, HR8893), conteos de homicidios (HC7984, HC8488, HC8893), población (PO7984, etc.), privación/afluencia (PE77/82/87, RDAC80/85/90). Quedan EXCLUIDOS los mapas de tasas calculadas (Raw Rate, Excess Risk, EB, Spatial Rate, Spatial EB).
+
+Errores graves a vigilar:
+1. Usar mapas de tasas calculadas (excluidos) o confundir conteo (HC) con tasa (HR).
+2. Box map (hinge 1.5 vs 3.0): Con hinge 3.0 las cercas se alejan (3 × IQR), así que solo quedan los atípicos más extremos. Los outliers con 3.0 son un subconjunto de los de 1.5: NUNCA pueden ser más (outliers 3.0 <= outliers 1.5). En conteos sesgados, los outliers son superiores.
+3. Interpretar mapas sin mirar la distribución: Los conteos (HC) están fuertemente sesgados a la derecha (muchos ceros/valores bajos y pocos condados altísimos).
+4. Afirmar que "Equal Intervals" describe bien datos muy sesgados: Con conteos, Equal Intervals concentra casi todos los condados (73–75 de 78) en la primera categoría, dejando el mapa casi de un solo color; Natural Breaks (Jenks) reparte mejor minimizando varianza intragrupo.
+5. Cartograma: Debe usar variable de homicidios y variable de tamaño (población), y compararse explícitamente con el mapa de cuantiles (corrige el sesgo visual de condados grandes poco poblados).
+6. Mapa condicional: Debe comparar entre paneles (cómo cambia el patrón de la variable mapeada según las dos variables condicionantes), no describir un solo panel.
+7. Co-location: Solo aplica a variables categóricas o dummies (muestra dónde coinciden categorías en el mismo condado).
+8. Map movie: Debe explicar que incorpora condados secuencialmente ordenados de menor a mayor valor.
+9. Análisis extenso final: Debe sintetizar y contrastar métodos para la MISMA variable, justificar cuál funciona mejor según el sesgo/outliers, nombrar condados/zonas y aclarar que los patrones visuales no prueban autocorrelación espacial (requiere I de Moran).
+
+Valores de referencia aproximados (78 condados, aceptar ±1-2 por versión de GeoDa):
+- HC7984: Box 1.5 ≈ 10 outliers, Box 3.0 ≈ 6, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/2/0/0/1.
+- HC8488: Box 1.5 ≈ 11, Box 3.0 ≈ 7, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/2/0/0/1.
+- HC8893: Box 1.5 ≈ 11, Box 3.0 ≈ 8, >2 DE ≈ 3, Equal Intervals (5) ≈ 75/1/1/0/1.
+- HR8893: Box 1.5 ≈ 6, Box 3.0 ≈ 2, >2 DE ≈ 2, Equal Intervals (5) ≈ 73/3/1/0/1.`
     }
   ]
 };
@@ -544,7 +544,7 @@ function renderValidator() {
   results.innerHTML = "";
   lastValidationSummary = "";
 
-  if (currentPracticeId === "prac_pesos") {
+  if (currentPracticeId === "prac1_matriz") {
     container.innerHTML = `
       <div class="geoda-guide">
         <strong>📍 ¿De dónde sacar estos datos en GeoDa?</strong>
@@ -614,7 +614,7 @@ function renderValidator() {
         </div>
       </div>
     `;
-  } else if (currentPracticeId === "prac5_mapas") {
+  } else if (currentPracticeId === "prac4_mapas") {
     container.innerHTML = `
       <div class="geoda-guide">
         <strong>📍 ¿De dónde sacar estos datos en GeoDa?</strong>
@@ -658,7 +658,7 @@ function runValidation() {
     summaryLines.push(`[${type.toUpperCase()}] ${rawForAI}`);
   };
 
-  if (currentPracticeId === "prac_pesos") {
+  if (currentPracticeId === "prac1_matriz") {
     const n = parseFloat(document.getElementById("v_n")?.value);
     const rMean = parseFloat(document.getElementById("v_rook_mean")?.value);
     const rPct = parseFloat(document.getElementById("v_rook_pct")?.value);
@@ -726,7 +726,7 @@ function runValidation() {
         addMsg("err", `⚠️ <strong>Posible división invertida:</strong> Tu media (${bp}) sugiere que dividiste <code>SQFT / PRICE</code> en lugar de <code>PRICE / SQFT</code>.`, `Posible división invertida en PRICE/SQFT (media=${bp}).`);
       }
     }
-  } else if (currentPracticeId === "prac5_mapas") {
+  } else if (currentPracticeId === "prac4_mapas") {
     const b15 = parseFloat(document.getElementById("v_m_box15")?.value);
     const b30 = parseFloat(document.getElementById("v_m_box30")?.value);
     const eq1 = parseFloat(document.getElementById("v_m_eq1")?.value);
@@ -819,7 +819,7 @@ function copyPromptToClipboard() {
   const fullPayload = `${CONFIGURACION_PROFESOR.rolGeneral}
 
 ================================================================
-PRÁCTICA SELECCIONADA: ${practice.titulo} (${practice.subtitulo})
+PRÁCTICA SELECCIONADA EN TEAMS: ${practice.titulo} (${practice.subtitulo})
 ${practice.rubrica}
 ================================================================
 ${preDiagBlock}
