@@ -75,6 +75,51 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
+    /* Bloque de video tutorial */
+    details.tutorial-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--ug-gold);
+      border-radius: 10px;
+      padding: 0.9rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    details.tutorial-box summary {
+      font-weight: 700;
+      color: var(--ug-blue);
+      cursor: pointer;
+      font-size: 0.98rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    details.tutorial-box summary::-webkit-details-marker {
+      display: none;
+    }
+    details.tutorial-box summary::after {
+      content: "▼ Ver / Ocultar";
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    details.tutorial-box[open] summary::after {
+      content: "▲ Ocultar";
+    }
+    .video-wrapper {
+      margin-top: 0.9rem;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid var(--border);
+    }
+    .video-wrapper video {
+      width: 100%;
+      max-height: 460px;
+      display: block;
+    }
+
     .step-badge {
       display: inline-block;
       background: var(--ug-blue);
@@ -293,6 +338,17 @@
 
 <main class="container">
 
+  <!-- VIDEO TUTORIAL -->
+  <details class="tutorial-box" open>
+    <summary>🎥 ¿Primera vez aquí? Mira cómo funciona el portal en 1 minuto</summary>
+    <div class="video-wrapper">
+      <video controls preload="metadata" playsinline>
+        <source src="./tutorial.mp4" type="video/mp4" />
+        Tu navegador no soporta la reproducción de video HTML5.
+      </video>
+    </div>
+  </details>
+
   <!-- PASO 1 -->
   <section class="card">
     <span class="step-badge">Paso 1</span>
@@ -367,8 +423,6 @@
 /**
  * ============================================================================
  * SECCIÓN EDITABLE POR EL PROFESOR (CONFIGURACION_PROFESOR)
- * Puedes actualizar los valores de referencia o agregar nuevas prácticas aquí
- * sin modificar el resto del código.
  * ============================================================================
  */
 const CONFIGURACION_PROFESOR = {
